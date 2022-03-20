@@ -5,4 +5,4 @@ Trying the pico8 fantasy console by writing a game inspired in my favorite dog i
 
 # [PLAY THE DEMO](https://www.hugochinchilla.net/smity-adventure/export/smity.html)
 
-[<img alt="Play smity's adventure" src="https://github.com/hughochinchilla/smity-adventure/blob/gh-pages/html-demo.jpg?raw=true">](https://www.hugochinchilla.net/smity-adventure/export/smity.html)
+[<img alt="Play smity's adventure" src="https://www.hugochinchilla.net/smity-adventure/html-demo.png?raw=true">](https://www.hugochinchilla.net/smity-adventure/export/smity.html)
