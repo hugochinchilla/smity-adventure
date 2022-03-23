@@ -7,107 +7,106 @@ black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,oran
 
 
 function _init()
-	t = 0
-	non_walkable = 0
-	dog_setup()
+    t = 0
+    non_walkable = 0
+    dog_setup()
 end
 
 function _update()
- 	t += 1
-	move_dog()
+    t += 1
+    move_dog()
 end
 
 function _draw()
- 	cls()
- 	draw_map()
-	palt(0, true)
- 	spr(33,90,60)
- 	spr(16,50,55)
- 	draw_dog()
+    cls()
+    draw_map()
+    palt(0, true)
+    spr(33,90,60)
+    spr(16,50,55)
+    draw_dog()
 end
 
 -->8
 -- Rendering tools
 function anim_frame(anim)
- 	_t = flr(t/6)
-	return anim[_t%#anim+1]
+    _t = flr(t/6)
+    return anim[_t%#anim+1]
 end
 
 function draw_map()
-	map(0,0,0,0,32,32)
+    map(0,0,0,0,32,32)
 end
 
 function cel(pos)
-	return flr(pos/8)
+    return flr(pos/8)
 end
 
 function is_tile(type, x, y)
-	tile = mget(cel(x), cel(y))
-	return fget(tile, type)
+    tile = mget(cel(x), cel(y))
+    return fget(tile, type)
 end
 
 -->8
 -- Player
 function dog_setup()
-	dog = {}
-	dog.x = 64
-	dog.y = 64
-	dog.face_left = true
-	dog.anim = {48,49,50,51}
-	dog.msg = {}
-	dog.msg.t = 0
-	dog.msg.txt = ""
+    dog = {}
+    dog.x = 64
+    dog.y = 64
+    dog.face_left = true
+    dog.anim = {48,49,50,51}
+    dog.msg = {}
+    dog.msg.t = 0
+    dog.msg.txt = ""
 end
 
 function draw_dog()
-	pal(7,0)
-	spr(anim_frame(dog.anim),dog.x,dog.y,1.0,1.0,not dog.face_left)
-	if (dog.msg.t > 0) then
-		dog.msg.t -= 1
-		print(dog.msg.txt, dog.x, dog.y-6)
-	end
-	pal()
+    pal(7,0)
+    spr(anim_frame(dog.anim),dog.x,dog.y,1.0,1.0,not dog.face_left)
+    if (dog.msg.t > 0) then
+        dog.msg.t -= 1
+        print(dog.msg.txt, dog.x, dog.y-6)
+    end
+    pal()
 end
 
 function dog_bark()
-	if (stat(46) == -1) then
-		sfx(0,0)
-		dog.msg.t = 6
-		dog.msg.txt = "woof"
-	end
+    if (stat(46) == -1) then
+        sfx(0,0)
+        dog.msg.t = 6
+        dog.msg.txt = "woof"
+    end
 end
 
 function can_move(x, y)
-	if is_tile(non_walkable, x+8, y+8) then
-		return false
-	elseif is_tile(non_walkable, x, y+8) then
-		return false
-	elseif is_tile(non_walkable, x+8, y) then
-		return false
-	elseif is_tile(non_walkable, x, y) then
-		return false				
-	end
+    if is_tile(non_walkable, x+8, y+8) then
+        return false
+    elseif is_tile(non_walkable, x, y+8) then
+        return false
+    elseif is_tile(non_walkable, x+8, y) then
+        return false
+    elseif is_tile(non_walkable, x, y) then
+        return false				
+    end
 
-	return true
+    return true
 end
 
 function move_dog()
-	new_x,new_y = dog.x, dog.y
-	
-	if btn(fire1) then dog_bark() end
-	if btn(left) then new_x -= 1 end
-	if btn(right) then new_x += 1 end
-	if btn(up) then new_y -= 1 end
-	if btn(down) then new_y += 1 end
+    new_x,new_y = dog.x, dog.y
+    
+    if btn(fire1) then dog_bark() end
+    if btn(left) then new_x -= 1 end
+    if btn(right) then new_x += 1 end
+    if btn(up) then new_y -= 1 end
+    if btn(down) then new_y += 1 end
 
+    if (dog.x != new_x) then
+        dog.face_left = dog.x >= new_x
+    end
 
-	if (dog.x != new_x) then
-		dog.face_left = dog.x >= new_x
-	end
-
-	if can_move(new_x, new_y) then
-		dog.x, dog.y = new_x, new_y
-	end
+    if can_move(new_x, new_y) then
+        dog.x, dog.y = new_x, new_y
+    end
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000333333333333333333333333493333333333333300000000
