@@ -4,12 +4,14 @@ __lua__
 
 left,right,up,down,fire1,fire2=0,1,2,3,4,5
 black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+non_walkable = 0
 
 
 function _init()
     t = 0
-    non_walkable = 0
     dog_setup()
+    human_setup()
+    ball_setup()
 end
 
 function _update()
@@ -20,9 +22,8 @@ end
 function _draw()
     cls()
     draw_map()
-    palt(0, true)
-    spr(33,90,60)
-    spr(16,50,55)
+    draw_human()
+    draw_ball()
     draw_dog()
 end
 
@@ -52,11 +53,24 @@ function dog_setup()
     dog = {}
     dog.x = 64
     dog.y = 64
+    dog.box = {8,8}
     dog.face_left = true
     dog.anim = {48,49,50,51}
-    dog.msg = {}
-    dog.msg.t = 0
-    dog.msg.txt = ""
+    dog.msg = {t=0, txt=""}
+    dog.love = false
+end
+
+function human_setup()
+    human = {}
+    human.x = 50
+    human.y = 55
+    human.box = {8,8}
+end
+
+function ball_setup()
+    ball = {}
+    ball.x = 90
+    ball.y = 60
 end
 
 function draw_dog()
@@ -64,9 +78,62 @@ function draw_dog()
     spr(anim_frame(dog.anim),dog.x,dog.y,1.0,1.0,not dog.face_left)
     if (dog.msg.t > 0) then
         dog.msg.t -= 1
-        print(dog.msg.txt, dog.x, dog.y-6)
+        print(dog.msg.txt, dog.x-3, dog.y-6, black)
+    end
+    if (dog.love and dog.msg.t == 0) then
+        print("♥", dog.x, dog.y-6, red)
     end
     pal()
+    draw_object_box(dog, red)
+end
+
+function draw_human()
+    spr(16, human.x, human.y)
+    draw_object_box(human, blue)
+
+    --d = ldistance(dog, human)
+    --x,y = unpack(distance(dog, human))
+    --print("dist "..d, human.x, human.y-35, blue)
+    --print("dist x "..x, human.x, human.y-17, blue)
+    --print("dist y "..y, human.x, human.y-9, blue)
+end
+
+
+function box(obj)
+    box_width,box_height = unpack(obj.box)
+    return {obj.x, obj.y, obj.x+box_width, obj.y+box_height}
+end
+
+function draw_object_box(obj, color)
+    _box = box(obj)
+    _box[#_box+1] = color
+    --rect(unpack(_box))
+end
+
+function distance(obj1, obj2)
+    box1 = box(obj1)
+    box2 = box(obj2)
+
+    xdist = min(
+        abs(box1[1] - box2[3]),
+        abs(box1[3] - box2[1])
+    )
+    ydist = min(
+        abs(box1[2] - box2[4]),
+        abs(box1[4] - box2[2])
+    )
+
+    return {abs(xdist), abs(ydist)}
+end
+
+function ldistance(obj1, obj2)
+    x,y = unpack(distance(obj1, obj2))
+
+    return sqrt(2*x + 2*y)
+end
+
+function draw_ball()
+    spr(33, ball.x, ball.y)
 end
 
 function dog_bark()
@@ -107,6 +174,8 @@ function move_dog()
     if can_move(new_x, new_y) then
         dog.x, dog.y = new_x, new_y
     end
+
+    dog.love = ldistance(dog, human) <= 3
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000333333333333333333333333493333333333333300000000
