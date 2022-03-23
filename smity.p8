@@ -54,17 +54,26 @@ function dog_setup()
 	dog.y = 64
 	dog.face_left = true
 	dog.anim = {48,49,50,51}
+	dog.msg = {}
+	dog.msg.t = 0
+	dog.msg.txt = ""
 end
 
 function draw_dog()
 	pal(7,0)
 	spr(anim_frame(dog.anim),dog.x,dog.y,1.0,1.0,not dog.face_left)
+	if (dog.msg.t > 0) then
+		dog.msg.t -= 1
+		print(dog.msg.txt, dog.x, dog.y-6)
+	end
 	pal()
 end
 
-function woof()
+function dog_bark()
 	if (stat(46) == -1) then
 		sfx(0,0)
+		dog.msg.t = 6
+		dog.msg.txt = "woof"
 	end
 end
 
@@ -85,7 +94,7 @@ end
 function move_dog()
 	new_x,new_y = dog.x, dog.y
 	
-	if btn(fire1) then woof() end
+	if btn(fire1) then dog_bark() end
 	if btn(left) then new_x -= 1 end
 	if btn(right) then new_x += 1 end
 	if btn(up) then new_y -= 1 end
