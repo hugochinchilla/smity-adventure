@@ -58,7 +58,7 @@ function dog_setup()
     dog.y = 64
     dog.box = {8,8}
     dog.face_left = true
-    dog.anim = {48,49,50,51}
+    dog.anim = {48,49,48,51,48,49,50,51}
     dog.msg = {t=0, txt=""}
     dog.time_near_human = 0
 end
