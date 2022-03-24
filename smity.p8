@@ -92,12 +92,6 @@ end
 function draw_human()
     spr(16, human.x, human.y)
     draw_object_box(human, blue)
-
-    --d = ldistance(dog, human)
-    --x,y = unpack(distance(dog, human))
-    --print("dist "..d, human.x, human.y-35, blue)
-    --print("dist x "..x, human.x, human.y-17, blue)
-    --print("dist y "..y, human.x, human.y-9, blue)
 end
 
 
@@ -107,31 +101,41 @@ function box(obj)
 end
 
 function draw_object_box(obj, color)
-    _box = box(obj)
-    _box[#_box+1] = color
-    --rect(unpack(_box))
+    debug = false
+    if debug then
+        _box = box(obj)
+        _box[#_box+1] = color
+        rect(unpack(_box))
+
+        d = ldistance(dog, human)
+        x,y = unpack(distance(dog, human))
+        print("dist l "..d, 60, 90, blue)
+        print("dist x "..x, 60, 100, blue)
+        print("dist y "..y, 60, 110, blue)
+    end
 end
 
 function distance(obj1, obj2)
     box1 = box(obj1)
     box2 = box(obj2)
 
-    xdist = min(
-        abs(box1[1] - box2[3]),
-        abs(box1[3] - box2[1])
-    )
-    ydist = min(
-        abs(box1[2] - box2[4]),
-        abs(box1[4] - box2[2])
+    xdist = max(
+        max(0, box1[1] - box2[3]),
+        max(0, box2[1] - box1[3])
     )
 
-    return {abs(xdist), abs(ydist)}
+    ydist = max(
+        max(0, box1[2] - box2[4]),
+        max(0, box2[2] - box1[4])
+    )
+
+    return {xdist, abs(ydist)}
 end
 
 function ldistance(obj1, obj2)
     x,y = unpack(distance(obj1, obj2))
 
-    return sqrt(2*x + 2*y)
+    return sqrt(x*x + y*y)
 end
 
 function draw_ball()
