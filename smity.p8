@@ -19,6 +19,7 @@ end
 function _update()
     t += 1
     move_dog()
+    show_love()
 end
 
 function _draw()
@@ -59,7 +60,7 @@ function dog_setup()
     dog.face_left = true
     dog.anim = {48,49,50,51}
     dog.msg = {t=0, txt=""}
-    dog.love = false
+    dog.time_near_human = 0
 end
 
 function human_setup()
@@ -80,10 +81,7 @@ function draw_dog()
     spr(anim_frame(dog.anim),dog.x,dog.y,1.0,1.0,not dog.face_left)
     if (dog.msg.t > 0) then
         dog.msg.t -= 1
-        print(dog.msg.txt, dog.x-3, dog.y-6, black)
-    end
-    if (dog.love and dog.msg.t == 0) then
-        print("♥", dog.x, dog.y-6, red)
+        print(dog.msg.txt, dog.x, dog.y-6, dog.msg.color)
     end
     pal()
     draw_object_box(dog, red)
@@ -145,9 +143,21 @@ end
 function dog_bark()
     if (stat(46) == -1) then
         sfx(0,0)
-        dog.msg.t = 6
-        dog.msg.txt = "woof"
+        dog.msg = {t=6, txt="woof", color=black}
     end
+end
+
+function show_love()
+    if ldistance(dog, human) <= 3 then
+        if dog.time_near_human >= 40 then
+            dog.time_near_human = -120
+            dog.msg = {t=40, txt="♥", color=red}
+        else
+            dog.time_near_human += 1
+        end 
+    else
+        dog.time_near_human = 0
+    end    
 end
 
 function can_move(x, y)
@@ -180,8 +190,6 @@ function move_dog()
     if can_move(new_x, new_y) then
         dog.x, dog.y = new_x, new_y
     end
-
-    dog.love = ldistance(dog, human) <= 3
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000333333333333333333333333493333333333333300000000
