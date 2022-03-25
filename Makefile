@@ -1,3 +1,13 @@
 .PHONY: run
 run:
-	./pico8 -root_path `pwd` -run smity.p8
+	./pico8 -run smity.p8
+
+.PHONY: html
+html:
+	rm -f smity.html smity.js
+	./pico8 smity.p8 -export smity.html
+	mv smity.html smity.js html/
+
+.PHONY: deploy
+deploy: html
+	git push master:gh-pages
