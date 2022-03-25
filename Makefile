@@ -10,4 +10,6 @@ html:
 
 .PHONY: deploy
 deploy: html
-	git push master:gh-pages
+	git add html/
+	git commit -m "Updated HTML export"
+	git push origin master:gh-pages
