@@ -120,18 +120,18 @@ function gravity()
   
 	
  	if grounded() and p1.speedy < 0 then
- 	 if p1.speedy < -7 then
+ 	 if p1.speedy < -12 then
 	   sfx(4,2)
 	   p1.speedy = 1
  	 else
 	 	 p1.speedy = 0
 	 	end
- 	elseif p1.speedy > p1.speedty then
+ 	else
  	 p1.speedy -= 1
  	end
  	
-
-		p1.y = min(n_ground, p1.y - p1.speedy)
+ 	max_speed = max(p1.speedy, -9)
+ 	p1.y = min(n_ground, p1.y - max_speed)
 end
 
 
