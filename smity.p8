@@ -91,8 +91,13 @@ function p1_input()
   	p1.speedtx = 2
   	p1.flipx = true
  	end
- 	if btnp(⬆️) and grounded() then
- 	 p1.speedy = 8
+ 	if btn(⬆️) then 
+ 		if grounded() and p1.jump_released then
+	 	 p1.speedy = 8
+	 	 p1.jump_released = false
+	 	end
+	 else
+	   p1.jump_released = true
  	end
  	
  	-- accel or decel on x
