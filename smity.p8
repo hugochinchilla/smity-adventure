@@ -146,17 +146,21 @@ function nearest_ground()
  
  if p1.speedy <= 0 then
 	 for i=cy,15,1 do
-	 	 cell_under_p1 = mget(cx,i)
-	   floor_height = fget(cell_under_p1) & 0b00000111
-	   
-	   if floor_height > 0 then
-	     n_ground = i * 8 - floor_height
+	   fh = floor_height(cx,i)	   
+	   if fh > 0 then
+	     n_ground = i * 8 - fh
 	     return n_ground
 	   end
 	 end
  end
 
 	return ground
+end
+
+function floor_height(x,y)
+  -- floor height is encoded using the 3
+  -- least significatnt bits from the sprite flags 
+  return fget(mget(x,y)) & 0b00000111
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000033344333333333333333333333333333493333333333333300000000
