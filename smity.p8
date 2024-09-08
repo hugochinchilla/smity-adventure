@@ -58,14 +58,14 @@ function p1_input()
 	 p1.speedtx = 0
 	 
   if btn(⬅️) then
-  	p1.speedtx = -4
+  	p1.speedtx = -2
   	p1.flipx = false
   end
   if btn(➡️) then
-  	p1.speedtx = 4
+  	p1.speedtx = 2
   	p1.flipx = true
  	end
- 	if btn(⬆️) and grounded() then
+ 	if btnp(⬆️) and grounded() then
  	 p1.speedy = 8
  	end
  	
@@ -78,37 +78,33 @@ function p1_input()
  	
  	
  	p1.x += p1.speedx
-		p1.y -= p1.speedy
-		
  	
   gravity()
 	end
 -->8
 function gravity()
- 	-- gravity
+  p1.speedty = -9
+  n_ground = nearest_ground()
+  
  	if p1.speedy > p1.speedty then
  	 p1.speedy -= 1
- 	end 	 	
- 	if grounded() then
- 	  p1.speedy = 0
- 	  p1.speedty = 0
- 	else
- 	  p1.speedty = -9
- 	end 		
- 	
- 	if p1.y > n_ground then
- 	 p1.y = n_ground
  	end
+ 	
+ 	if grounded() and p1.speedy < 0 then
+ 	 p1.speedy = 0
+ 	end
+
+		p1.y = min(n_ground, p1.y - p1.speedy)
 end
 
 
 function grounded()
-  return p1.y >= nearest_ground()
+  return p1.y >= n_ground
 end
 
 function cell()
-		cellx = flr(p1.x/8)
-		celly = flr(p1.y/8)		
+		cellx = flr(p1.x / 8 +.5)
+		celly = flr(p1.y / 8 +.5)		
 		
 		return cellx, celly
 end
@@ -116,16 +112,18 @@ end
 function nearest_ground()
  n_ground = ground
  cx,cy = cell()
- for i=cy,15,1 do
- 	 cell_under_p1 = mget(cx,i)
-   is_floor = fget(cell_under_p1,0)
-   
-   if is_floor and p1.speedy<=0 then
-     n_ground = i * 8
-     return n_ground
-   end
- end
  
+ if p1.speedy <= 0 then
+	 for i=cy,15,1 do
+	 	 cell_under_p1 = mget(cx,i)
+	   is_floor = fget(cell_under_p1,0)
+	   
+	   if is_floor then
+	     n_ground = i * 8
+	     return n_ground
+	   end
+	 end
+ end
 
 	return ground
 end
