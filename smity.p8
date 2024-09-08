@@ -24,9 +24,9 @@ function _update()
   t += 1
   p1_input()
   
-    --if run off screen warp to other side
-    if (p1.x>128) then p1.x=-8 end
-    if (p1.x<-8) then p1.x=128 end  
+  --if run off screen warp to other side
+  if (p1.x>128) then p1.x=-8 end
+  if (p1.x<-8) then p1.x=128 end  
 end
 
 function _draw()
