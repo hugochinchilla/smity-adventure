@@ -35,10 +35,9 @@ function _draw()
 		dplayer()
 		
 
-  print("yy: " .. p1.y, 40, 10, 6)
-  print(" y: " .. p1.speedy, 40, 20, 1)
-  print("ty: " .. p1.speedty, 40, 30, 1)
-
+  print("yy: " .. p1.speedy, 40, 10, 6)
+  print("cx: " .. cellx, 40, 20, 1)
+  print("cy: " .. celly, 40, 30, 1)
   print("sprt: " .. n_ground, 40, 40, 8)
 end
 
@@ -46,12 +45,39 @@ end
 function dmap()
   rectfill(0,0,128,128,13)
   map(0,0,0,0,32,32)
+  --dcells()
 end
 
 function dplayer()
   pal(7,0)
-  spr(48,p1.x,p1.y,1,1,p1.flipx)
+  spr(48,p1.x,p1.y,1,1,p1.flipx)  
   pal()
+  --debug_player()
+end
+
+function dcells()
+  for i=0,15,1 do
+   for j=0,15,1 do
+    line(j*8-1,i*8-1,j*8-1,i*8-1,2)
+   end
+  end
+end
+
+function debug_player()
+  line(
+    p1.x+2,
+    p1.y+7,
+    p1.x+5,
+    p1.y+7,
+    12
+  )
+  line(
+   p1.x,
+   p1.y,
+   p1.x,
+   p1.y,
+   14
+  )
 end
 -->8
 function p1_input()
