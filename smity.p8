@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 35
+version 42
 __lua__
 -- smity's adventure
 -- 
@@ -120,7 +120,7 @@ function nearest_ground()
  	 cell_under_p1 = mget(cx,i)
    is_floor = fget(cell_under_p1,0)
    
-   if is_floor then
+   if is_floor and p1.speedy<=0 then
      n_ground = i * 8
      return n_ground
    end
