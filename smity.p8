@@ -11,35 +11,40 @@ function _init()
   t = 0
   
   p1 = {}
-  p1.x = 0
-  p1.y = ground
+  p1.x = 12
+  p1.y = ground  
   p1.sprt = 48
   p1.flipx = true
   p1.speedx = 0
   p1.speedy = 0
   p1.speedtx = 0
   p1.speedty = 0
+
+  p1.state = "idle"
+  p1.prt = 0
+  p1.dir = 1
 end
 
 function _update()
   t += 1
-  p1_input()
+  -- p1_input()
   
   --if run off screen warp to other side
-  if (p1.x>128) then p1.x=-8 end
-  if (p1.x<-8) then p1.x=128 end  
+  -- if (p1.x>128) then p1.x=-8 end
+  -- if (p1.x<-8) then p1.x=128 end  
+  update_state()
 end
 
 function _draw()
-  cls()
-		dmap()
-		dplayer()
+	cls()
+	dmap()
+	dplayer()
 		
 
-  print("yy: " .. p1.speedy, 40, 10, 6)
-  print("cx: " .. cellx, 40, 20, 1)
-  print("cy: " .. celly, 40, 30, 1)
-  print("sprt: " .. n_ground, 40, 40, 8)
+	--print("yy: " .. p1.speedy, 40, 10, 6)
+	--print("cx: " .. cellx, 40, 20, 1)
+	--print("cy: " .. celly, 40, 30, 1)
+	print("debug: " .. h, 40, 40, 8)
 end
 
 -->8
@@ -81,6 +86,66 @@ function debug_player()
   )
 end
 -->8
+
+
+function update_state()
+	p1.prt += 1
+	p1.x = (p1.x + 128) % 128 -- no bounds left and right
+
+	b_up = btn(⬆️)
+	b_left = btn(⬅️)
+	b_right = btn(➡️)
+
+	-- idle state
+	if p1.state=="idle" then
+		p1.sprite = 0
+		if (b_left or b_right) change_state("walk")
+		if (b_up) change_state("jump")
+		if (canfall()) change_state("drop")
+	end
+
+	-- walk state
+	if p1.state=="walk" then
+		if (b_left) p1.dir = -1
+		if (b_right) p1.dir = 1
+		p1.x += p1.dir * min(p1.prt, 2)
+
+		if (not (b_left or b_right)) change_state("idle")
+		if (b_up) change_state("jump")
+		if (canfall()) change_state("drop")
+	end
+
+	-- fall state
+	if p1.state == "drop" then
+		if (canfall()) then
+			if (b_left) p1.x -= 1 -- steer left
+			if (b_right) p1.x += 1 -- steer right
+			p1.y = min(p1.y + p1.prt, n_ground) -- move the player
+		else
+			change_state("idle")
+		end
+	end
+
+	-- jump state
+	if p1.state=="jump" then
+		p1.y -= 10 - p1.prt
+		if (b_left) p1.x -= 2
+		if (b_right) p1.x += 2
+		if (not b_up or p1.prt > 7) change_state("idle")
+	end	
+end
+
+function change_state(s)
+	p1.state = s
+	p1.prt = 0
+end
+
+function canfall()
+	-- get the map tile under the player
+	h = nearest_ground()
+  return p1.y < n_ground
+end
+
 function p1_input()
 	 p1.speedtx = 0
 	 
