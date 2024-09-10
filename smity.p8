@@ -130,6 +130,7 @@ function update_state()
     p1.sprite = 32
     
     move(p1)
+    if (p1.prt == 0) sfx(3)
     p1.y -= 8 - p1.prt
 
     if (not b_up or p1.prt > 7) then
