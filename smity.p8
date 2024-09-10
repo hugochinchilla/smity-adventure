@@ -82,7 +82,8 @@ function update_state()
   -- idle state
   if p1.state=="idle" then
     p1.sprite = 48
-    if (p1.prt > 40) p1.sprite = 49
+    if (p1.prt > 40) p1.sprite = 49 -- tail down
+    if (p1.prt > 80) p1.sprite = 37 + ((t/10%12 <= 1) and 0 or 1) -- sit
 
     move(p1)
 
