@@ -23,6 +23,7 @@ function _init()
   p1.state = "idle"
   p1.prt = 0
   p1.dir = 1
+  p1.speed = 0
 end
 
 function _update()
@@ -33,8 +34,9 @@ end
 function _draw()
 	cls()
 	draw_map()
+  draw_hud()
 	draw_player()
-	print("debug: " .. h, 40, 40, 8)
+	print("debug: " .. p1.state, 40, 40, 8)
 end
 
 -->8
@@ -42,6 +44,12 @@ function draw_map()
   rectfill(0,0,128,128,13)
   map(0,0,0,0,32,32)
   -- draw_cells()
+end
+
+function draw_hud()
+  print("spd: " .. p1.speed, 2, 2, 1)
+  print(p1.state, 112, 2, 1)
+  print(p1.prt, 96, 2, 2)
 end
 
 function draw_player()
@@ -66,7 +74,9 @@ end
 
 
 function update_state()
-	p1.prt += 1
+  subpixels = 16
+
+	p1.prt = min(p1.prt + 1, 600) -- limit prt to 10 seconds to avoid overflows
 	p1.x = (p1.x + 128) % 128 -- no bounds left and right
 
 	b_up = btn(⬆️)
@@ -76,16 +86,20 @@ function update_state()
 	-- idle state
 	if p1.state=="idle" then
 		p1.sprite = 0
-		if (b_left or b_right) change_state("walk")
+		
+    if (b_left or b_right) change_state("walk")
 		if (b_up) change_state("jump")
 		if (canfall()) change_state("drop")
+    if (not b_left and not b_right) p1.speed = 0
 	end
 
 	-- walk state
 	if p1.state=="walk" then
 		if (b_left) p1.dir = -1
-		if (b_right) p1.dir = 1
-		p1.x += p1.dir * min(p1.prt, 2)
+    if (b_right) p1.dir = 1
+
+    p1.speed = speed()
+    p1.x += p1.dir * p1.speed
 
 		if (not (b_left or b_right)) change_state("idle")
 		if (b_up) change_state("jump")
@@ -95,8 +109,8 @@ function update_state()
 	-- fall state
 	if p1.state == "drop" then
 		if (canfall()) then
-			if (b_left) p1.x -= 1 -- steer left
-			if (b_right) p1.x += 1 -- steer right
+			if (b_left) p1.x -= max(p1.speed, 1) -- steer left
+			if (b_right) p1.x += max(p1.speed, 1) -- steer right
 			p1.y = min(p1.y + p1.prt, n_ground) -- move the player
 		else
 			change_state("idle")
@@ -105,11 +119,27 @@ function update_state()
 
 	-- jump state
 	if p1.state=="jump" then
-		p1.y -= 10 - p1.prt
-		if (b_left) p1.x -= 2
-		if (b_right) p1.x += 2
-		if (not b_up or p1.prt > 7) change_state("idle")
+		p1.y -= 8 - p1.prt
+		if (b_left) p1.x -= p1.speed
+		if (b_right) p1.x += p1.speed
+
+		if (not b_up or p1.prt > 7) then
+      if canfall() then
+        change_state("drop")
+      else
+        change_state("idle")
+      end
+    end
 	end	
+end
+
+function speed()
+  local max_speed = 3
+  local accel = 5
+  local speed = flr((accel * p1.prt) / subpixels)
+  local new_speed = min(max(1,speed), max_speed)
+  
+  return max(new_speed, p1.speed)
 end
 
 function change_state(s)
@@ -157,7 +187,9 @@ function p1_input()
  	
   gravity()
 	end
--->8
+
+
+  -->8
 function gravity()
   p1.speedty = -9
   n_ground = nearest_ground()
