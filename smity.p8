@@ -121,6 +121,10 @@ function update_state()
     if (canfall()) then
       p1.y = min(p1.y + p1.prt, n_ground) -- move the player
     else
+      if (p1.prt > 10) then
+        sfx(4,2)
+        p1.y -= 1
+      end
       change_state("idle")
     end
   end
