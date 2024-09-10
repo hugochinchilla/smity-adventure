@@ -36,7 +36,6 @@ function _draw()
   draw_map()
   draw_hud()
   draw_player()
-  print("debug: " .. p1.state, 40, 40, 8)
 end
 
 -->8
@@ -54,7 +53,7 @@ end
 
 function draw_player()
   pal(7,0)
-  spr(p1.sprt,p1.x,p1.y,1,1,p1.flipx)
+  spr(p1.sprite,p1.x,p1.y,1,1, p1.dir>0)
   pal()
   -- debug_player()
 end
@@ -76,16 +75,25 @@ end
 function update_state()
   subpixels = 16
 
-  p1.prt = min(p1.prt + 1, 600) -- limit prt to 10 seconds to avoid overflows
-  p1.x = (p1.x + 128) % 128 -- no bounds left and right
-
   b_up = btn(⬆️)
   b_left = btn(⬅️)
   b_right = btn(➡️)
 
+  if (b_left or b_right) then
+    p1.speed = speed()
+    p1.x += p1.dir * p1.speed
+  end
+
+  if (b_left) p1.dir = -1
+  if (b_right) p1.dir = 1
+  
+  p1.x = (p1.x + 128) % 128 -- no bounds left and right  
+  p1.prt = min(p1.prt + 1, 600) -- limit prt to 10 seconds to avoid overflows
+  
+
   -- idle state
   if p1.state=="idle" then
-    p1.sprite = 0
+    p1.sprite = 48 + t/10%2
     
     if (b_left or b_right) change_state("walk")
     if (b_up) change_state("jump")
@@ -95,12 +103,6 @@ function update_state()
 
   -- walk state
   if p1.state=="walk" then
-    if (b_left) p1.dir = -1
-    if (b_right) p1.dir = 1
-
-    p1.speed = speed()
-    p1.x += p1.dir * p1.speed
-
     if (not (b_left or b_right)) change_state("idle")
     if (b_up) change_state("jump")
     if (canfall()) change_state("drop")
@@ -109,8 +111,6 @@ function update_state()
   -- fall state
   if p1.state == "drop" then
     if (canfall()) then
-      if (b_left) p1.x -= max(p1.speed, 1) -- steer left
-      if (b_right) p1.x += max(p1.speed, 1) -- steer right
       p1.y = min(p1.y + p1.prt, n_ground) -- move the player
     else
       change_state("idle")
@@ -119,10 +119,8 @@ function update_state()
 
   -- jump state
   if p1.state=="jump" then
+    p1.sprite = 32
     p1.y -= 8 - p1.prt
-    if (b_left) p1.x -= p1.speed
-    if (b_right) p1.x += p1.speed
-
     if (not b_up or p1.prt > 7) then
       if canfall() then
         change_state("drop")
@@ -136,8 +134,8 @@ end
 function speed()
   local max_speed = 3
   local accel = 5
-  local speed = flr((accel * p1.prt) / subpixels)
-  local new_speed = min(max(1,speed), max_speed)
+  local accel_speed = flr((accel * p1.prt * p1.prt) / subpixels)
+  local new_speed = min(max(1,accel_speed), max_speed)
   
   return max(new_speed, p1.speed)
 end
