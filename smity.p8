@@ -10,20 +10,14 @@ ground = 106
 function _init()
   t = 0
   
-  p1 = {}
-  p1.x = 12
-  p1.y = ground  
-  p1.sprt = 48
-  p1.flipx = true
-  p1.speedx = 0
-  p1.speedy = 0
-  p1.speedtx = 0
-  p1.speedty = 0
-
-  p1.state = "idle"
-  p1.prt = 0
-  p1.dir = 1
-  p1.speed = 0
+  p1 = {
+    x = 12,
+    y = 90,
+    state = "idle",
+    prt = 0,
+    dir = 1,
+    speed = 0,
+  }
 end
 
 function _update()
@@ -73,8 +67,6 @@ end
 
 
 function update_state()
-  subpixels = 16
-
   b_up = btn(⬆️)
   b_down = btn(⬇️)
   b_left = btn(⬅️)
@@ -153,6 +145,7 @@ function update_state()
   end  
 end
 
+
 function move(o)
   if (b_left or b_right) then
     o.speed = speed()
@@ -163,7 +156,7 @@ end
 function speed()
   local max_speed = 3
   local accel = 5
-  local accel_speed = flr((accel * p1.prt * p1.prt) / subpixels)
+  local accel_speed = (accel * p1.prt * p1.prt)
   local new_speed = min(max(1,accel_speed), max_speed)
   
   return max(new_speed, p1.speed)
@@ -176,72 +169,11 @@ end
 
 function canfall()
   -- get the map tile under the player
-  h = nearest_ground()
-  return p1.y < n_ground
-end
-
-function p1_input()
-  p1.speedtx = 0
-   
-  if btn(⬅️) then
-    p1.speedtx = -2
-    p1.flipx = false
-  end
-  if btn(➡️) then
-    p1.speedtx = 2
-    p1.flipx = true
-  end
-  if btn(⬆️) then 
-    if grounded() and p1.jump_released then
-     p1.speedy = 8
-     p1.sprt = 32
-     p1.jump_released = false
-     sfx(3)
-    end
-   else
-     p1.jump_released = true
-  end
-  
-  -- accel or decel on x
-  if p1.speedx > p1.speedtx then
-    p1.speedx -= 1
-  elseif p1.speedx < p1.speedtx then
-    p1.speedx += 1
-  end	
-
-  
-  p1.x += p1.speedx
-  
-  gravity()
+  return p1.y < nearest_ground()
 end
 
 
-  -->8
-function gravity()
-  p1.speedty = -9
-  n_ground = nearest_ground()
-  
-  
-  if grounded() and p1.speedy < 0 then
-   p1.sprt = 48
-   if p1.speedy < -12 then
-     sfx(4,2)
-     p1.speedy = 1
-   else
-     p1.speedy = 0
-    end
-  else
-   p1.speedy -= 1
-  end
-  
-  max_speed = max(p1.speedy, -9)
-  p1.y = min(n_ground, p1.y - max_speed)
-end
-
-
-function grounded()
-  return p1.y >= n_ground
-end
+-->8
 
 function cell()
     cellx = flr(p1.x / 8 +.5)
@@ -251,23 +183,21 @@ function cell()
 end
 
 function nearest_ground()
- n_ground = ground
- cx,cy = cell()
+  n_ground = ground
+  cx,cy = cell()
  
- if p1.speedy <= 0 then
-   for i=cy,15,1 do
-     fh = floor_height(cx,i)	   
-     if fh > 0 then
-       n_ground = i * 8 - fh
-       return n_ground
-     end
-   end
- end
+  for i=cy,15,1 do
+    fh = tile_floor_height(cx,i)	   
+    if fh > 0 then
+      n_ground = i * 8 - fh
+      return n_ground
+    end
+  end
 
   return ground
 end
 
-function floor_height(x,y)
+function tile_floor_height(x,y)
   -- floor height is encoded using the 3
   -- least significatnt bits from the sprite flags 
   return fget(mget(x,y)) & 0b00000111
