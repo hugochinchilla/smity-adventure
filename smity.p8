@@ -80,11 +80,6 @@ function update_state()
   b_left = btn(⬅️)
   b_right = btn(➡️)
 
-  if (b_left or b_right) then
-    p1.speed = speed()
-    p1.x += p1.dir * p1.speed
-  end
-
   if (b_left) p1.dir = -1
   if (b_right) p1.dir = 1
   
@@ -96,7 +91,9 @@ function update_state()
   if p1.state=="idle" then
     p1.sprite = 48
     if (p1.prt > 40) p1.sprite = 49
-    
+
+    move(p1)
+
     if (b_left or b_right) change_state("walk")
     if (b_up) change_state("jump")
     if (b_down) change_state("crouch")
@@ -107,6 +104,9 @@ function update_state()
   -- walk state
   if p1.state=="walk" then
     p1.sprite = 48
+    
+    move(p1)
+
     if (not (b_left or b_right)) change_state("idle")
     if (b_up) change_state("jump")
     if (canfall()) change_state("drop")
@@ -115,6 +115,8 @@ function update_state()
   -- fall state
   if p1.state == "drop" then
     p1.sprite = 48 + t/10%2
+
+    move(p1)
 
     if (canfall()) then
       p1.y = min(p1.y + p1.prt, n_ground) -- move the player
@@ -126,7 +128,10 @@ function update_state()
   -- jump state
   if p1.state=="jump" then
     p1.sprite = 32
+    
+    move(p1)
     p1.y -= 8 - p1.prt
+
     if (not b_up or p1.prt > 7) then
       if canfall() then
         change_state("drop")
@@ -140,6 +145,13 @@ function update_state()
   if p1.state == "crouch" then
     p1.sprite = 33 + t/10%2
     if (not b_down) change_state("idle")
+  end  
+end
+
+function move(o)
+  if (b_left or b_right) then
+    o.speed = speed()
+    o.x += o.dir * o.speed
   end  
 end
 
