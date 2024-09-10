@@ -32,11 +32,11 @@ function _update()
 end
 
 function _draw()
-	cls()
-	draw_map()
+  cls()
+  draw_map()
   draw_hud()
-	draw_player()
-	print("debug: " .. p1.state, 40, 40, 8)
+  draw_player()
+  print("debug: " .. p1.state, 40, 40, 8)
 end
 
 -->8
@@ -76,61 +76,61 @@ end
 function update_state()
   subpixels = 16
 
-	p1.prt = min(p1.prt + 1, 600) -- limit prt to 10 seconds to avoid overflows
-	p1.x = (p1.x + 128) % 128 -- no bounds left and right
+  p1.prt = min(p1.prt + 1, 600) -- limit prt to 10 seconds to avoid overflows
+  p1.x = (p1.x + 128) % 128 -- no bounds left and right
 
-	b_up = btn(⬆️)
-	b_left = btn(⬅️)
-	b_right = btn(➡️)
+  b_up = btn(⬆️)
+  b_left = btn(⬅️)
+  b_right = btn(➡️)
 
-	-- idle state
-	if p1.state=="idle" then
-		p1.sprite = 0
-		
+  -- idle state
+  if p1.state=="idle" then
+    p1.sprite = 0
+    
     if (b_left or b_right) change_state("walk")
-		if (b_up) change_state("jump")
-		if (canfall()) change_state("drop")
+    if (b_up) change_state("jump")
+    if (canfall()) change_state("drop")
     if (not b_left and not b_right) p1.speed = 0
-	end
+  end
 
-	-- walk state
-	if p1.state=="walk" then
-		if (b_left) p1.dir = -1
+  -- walk state
+  if p1.state=="walk" then
+    if (b_left) p1.dir = -1
     if (b_right) p1.dir = 1
 
     p1.speed = speed()
     p1.x += p1.dir * p1.speed
 
-		if (not (b_left or b_right)) change_state("idle")
-		if (b_up) change_state("jump")
-		if (canfall()) change_state("drop")
-	end
+    if (not (b_left or b_right)) change_state("idle")
+    if (b_up) change_state("jump")
+    if (canfall()) change_state("drop")
+  end
 
-	-- fall state
-	if p1.state == "drop" then
-		if (canfall()) then
-			if (b_left) p1.x -= max(p1.speed, 1) -- steer left
-			if (b_right) p1.x += max(p1.speed, 1) -- steer right
-			p1.y = min(p1.y + p1.prt, n_ground) -- move the player
-		else
-			change_state("idle")
-		end
-	end
+  -- fall state
+  if p1.state == "drop" then
+    if (canfall()) then
+      if (b_left) p1.x -= max(p1.speed, 1) -- steer left
+      if (b_right) p1.x += max(p1.speed, 1) -- steer right
+      p1.y = min(p1.y + p1.prt, n_ground) -- move the player
+    else
+      change_state("idle")
+    end
+  end
 
-	-- jump state
-	if p1.state=="jump" then
-		p1.y -= 8 - p1.prt
-		if (b_left) p1.x -= p1.speed
-		if (b_right) p1.x += p1.speed
+  -- jump state
+  if p1.state=="jump" then
+    p1.y -= 8 - p1.prt
+    if (b_left) p1.x -= p1.speed
+    if (b_right) p1.x += p1.speed
 
-		if (not b_up or p1.prt > 7) then
+    if (not b_up or p1.prt > 7) then
       if canfall() then
         change_state("drop")
       else
         change_state("idle")
       end
     end
-	end	
+  end	
 end
 
 function speed()
@@ -143,50 +143,50 @@ function speed()
 end
 
 function change_state(s)
-	p1.state = s
-	p1.prt = 0
+  p1.state = s
+  p1.prt = 0
 end
 
 function canfall()
-	-- get the map tile under the player
-	h = nearest_ground()
+  -- get the map tile under the player
+  h = nearest_ground()
   return p1.y < n_ground
 end
 
 function p1_input()
   p1.speedtx = 0
-	 
+   
   if btn(⬅️) then
-  	p1.speedtx = -2
-  	p1.flipx = false
+    p1.speedtx = -2
+    p1.flipx = false
   end
   if btn(➡️) then
-  	p1.speedtx = 2
-  	p1.flipx = true
- 	end
- 	if btn(⬆️) then 
- 		if grounded() and p1.jump_released then
-	 	 p1.speedy = 8
-	 	 p1.sprt = 32
-	 	 p1.jump_released = false
-	 	 sfx(3)
-	 	end
-	 else
-	   p1.jump_released = true
- 	end
- 	
- 	-- accel or decel on x
- 	if p1.speedx > p1.speedtx then
- 		p1.speedx -= 1
- 	elseif p1.speedx < p1.speedtx then
- 		p1.speedx += 1
- 	end	
- 	
- 	
- 	p1.x += p1.speedx
- 	
+    p1.speedtx = 2
+    p1.flipx = true
+  end
+  if btn(⬆️) then 
+    if grounded() and p1.jump_released then
+     p1.speedy = 8
+     p1.sprt = 32
+     p1.jump_released = false
+     sfx(3)
+    end
+   else
+     p1.jump_released = true
+  end
+  
+  -- accel or decel on x
+  if p1.speedx > p1.speedtx then
+    p1.speedx -= 1
+  elseif p1.speedx < p1.speedtx then
+    p1.speedx += 1
+  end	
+
+  
+  p1.x += p1.speedx
+  
   gravity()
-	end
+end
 
 
   -->8
@@ -194,21 +194,21 @@ function gravity()
   p1.speedty = -9
   n_ground = nearest_ground()
   
-	
- 	if grounded() and p1.speedy < 0 then
- 	 p1.sprt = 48
- 	 if p1.speedy < -12 then
-	   sfx(4,2)
-	   p1.speedy = 1
- 	 else
-	 	 p1.speedy = 0
-	 	end
- 	else
- 	 p1.speedy -= 1
- 	end
- 	
- 	max_speed = max(p1.speedy, -9)
- 	p1.y = min(n_ground, p1.y - max_speed)
+  
+  if grounded() and p1.speedy < 0 then
+   p1.sprt = 48
+   if p1.speedy < -12 then
+     sfx(4,2)
+     p1.speedy = 1
+   else
+     p1.speedy = 0
+    end
+  else
+   p1.speedy -= 1
+  end
+  
+  max_speed = max(p1.speedy, -9)
+  p1.y = min(n_ground, p1.y - max_speed)
 end
 
 
@@ -217,10 +217,10 @@ function grounded()
 end
 
 function cell()
-		cellx = flr(p1.x / 8 +.5)
-		celly = flr(p1.y / 8 +.5)		
-		
-		return cellx, celly
+    cellx = flr(p1.x / 8 +.5)
+    celly = flr(p1.y / 8 +.5)		
+    
+    return cellx, celly
 end
 
 function nearest_ground()
@@ -228,16 +228,16 @@ function nearest_ground()
  cx,cy = cell()
  
  if p1.speedy <= 0 then
-	 for i=cy,15,1 do
-	   fh = floor_height(cx,i)	   
-	   if fh > 0 then
-	     n_ground = i * 8 - fh
-	     return n_ground
-	   end
-	 end
+   for i=cy,15,1 do
+     fh = floor_height(cx,i)	   
+     if fh > 0 then
+       n_ground = i * 8 - fh
+       return n_ground
+     end
+   end
  end
 
-	return ground
+  return ground
 end
 
 function floor_height(x,y)
