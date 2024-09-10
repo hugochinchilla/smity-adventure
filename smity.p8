@@ -134,12 +134,9 @@ function update_state()
     if (p1.prt == 0) sfx(3)
     p1.y -= 8 - p1.prt
 
-    if (not b_up or p1.prt > 7) then
-      if canfall() then
-        change_state("drop")
-      else
-        change_state("idle")
-      end
+    local keep_jumping = b_up and p1.prt < 8
+    if (not keep_jumping) then
+      change_state(canfall() and "drop" or "idle")
     end
   end	
 
