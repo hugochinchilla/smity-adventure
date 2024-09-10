@@ -43,6 +43,9 @@ function draw_hud()
   print("spd: " .. p1.speed, 2, 2, 1)
   print(p1.state, 112, 2, 1)
   print(p1.prt, 96, 2, 2)
+
+  local value = ""
+  print(value, 30, 2, 1)
 end
 
 function draw_player()
