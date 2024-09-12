@@ -166,13 +166,12 @@ end
 
 function speed()
   local max_speed = 3
-  local accel = 800
-  local ts = p1.prt/60
+  local accel = 22
+  local ts = p1.prt/30
 
-  local tspeed = max(accel * ts * ts, 1)
-  local new_speed = min(tspeed, max_speed)
+  local tspeed = p1.speed + (accel * ts)
 
-  return max(new_speed, p1.speed)
+  return min(tspeed, max_speed)
 end
 
 function change_state(s)
