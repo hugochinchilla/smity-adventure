@@ -2,14 +2,14 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 -- smity's adventure
--- 
+--
 
 ground = 106
 
 
 function _init()
   t = 0
-  
+
   p1 = {
     x = 12,
     y = 90,
@@ -77,10 +77,10 @@ function update_state()
 
   if (b_left) p1.dir = -1
   if (b_right) p1.dir = 1
-  
-  p1.x = (p1.x + 128) % 128 -- no bounds left and right  
+
+  p1.x = (p1.x + 128) % 128 -- no bounds left and right
   p1.prt = min(p1.prt + 1, 600) -- limit prt to 10 seconds to avoid overflows
-  
+
 
   -- idle state
   if p1.state=="idle" then
@@ -99,7 +99,7 @@ function update_state()
   if p1.state=="walk" then
     p1.sprite = 48
     if (p1.speed == 3) p1.sprite = 35 + t/5%2
-    
+
     move(p1)
 
     if (not (b_left or b_right)) change_state("slide")
@@ -110,13 +110,13 @@ function update_state()
   -- slide state
   if p1.state=="slide" then
     p1.sprite = 48
-    
+
     move(p1)
 
     if (not (b_left or b_right)) change_state("idle")
     if (b_up) change_state("jump")
     if (canfall()) change_state("drop")
-  end  
+  end
 
   -- fall state
   if p1.state == "drop" then
@@ -138,7 +138,7 @@ function update_state()
   -- jump state
   if p1.state=="jump" then
     p1.sprite = 32
-    
+
     move(p1)
     if (p1.prt == 0) sfx(3)
     p1.y -= 8 - p1.prt
@@ -147,13 +147,13 @@ function update_state()
     if (not keep_jumping) then
       change_state(canfall() and "drop" or "walk")
     end
-  end	
+  end
 
   -- crouch state
   if p1.state == "crouch" then
     p1.sprite = 33 + t/10%2
     if (not b_down) change_state("idle")
-  end  
+  end
 end
 
 
@@ -161,7 +161,7 @@ function move(o)
   if (b_left or b_right) then
     o.speed = speed()
     o.x += o.dir * o.speed
-  end  
+  end
 end
 
 function speed()
@@ -171,7 +171,7 @@ function speed()
 
   local tspeed = max(accel * ts * ts, 1)
   local new_speed = min(tspeed, max_speed)
-  
+
   return max(new_speed, p1.speed)
 end
 
@@ -190,17 +190,17 @@ end
 
 function cell()
     cellx = flr(p1.x / 8 +.5)
-    celly = flr(p1.y / 8 +.5)		
-    
+    celly = flr(p1.y / 8 +.5)
+
     return cellx, celly
 end
 
 function nearest_ground()
   n_ground = ground
   cx,cy = cell()
- 
+
   for i=cy,15,1 do
-    fh = tile_floor_height(cx,i)	   
+    fh = tile_floor_height(cx,i)
     if fh > 0 then
       n_ground = i * 8 - fh
       return n_ground
@@ -212,7 +212,7 @@ end
 
 function tile_floor_height(x,y)
   -- floor height is encoded using the 3
-  -- least significatnt bits from the sprite flags 
+  -- least significatnt bits from the sprite flags
   return fget(mget(x,y)) & 0b00000111
 end
 
