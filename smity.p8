@@ -190,7 +190,7 @@ end
 
 function cell()
     cellx = flr(p1.x / 8 +.5)
-    celly = flr(p1.y / 8 +.5)
+    celly = flr((p1.y+8) / 8)
 
     return cellx, celly
 end
