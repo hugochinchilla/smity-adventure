@@ -85,16 +85,14 @@ function update_state()
   -- idle state
   if p1.state=="idle" then
     p1.sprite = 48
+    p1.speed = 0
     if (p1.prt > 40) p1.sprite = 49 -- tail down
     if (p1.prt > 80) p1.sprite = 37 + ((t/10%12 <= 1) and 0 or 1) -- sit
-
-    move(p1)
 
     if (b_left or b_right) change_state("walk")
     if (b_up) change_state("jump")
     if (b_down) change_state("crouch")
     if (canfall()) change_state("drop")
-    if (not b_left and not b_right) p1.speed = 0
   end
 
   -- walk state
@@ -104,10 +102,21 @@ function update_state()
     
     move(p1)
 
-    if (not (b_left or b_right)) change_state("idle")
+    if (not (b_left or b_right)) change_state("slide")
     if (b_up) change_state("jump")
     if (canfall()) change_state("drop")
   end
+
+  -- slide state
+  if p1.state=="slide" then
+    p1.sprite = 48
+    
+    move(p1)
+
+    if (not (b_left or b_right)) change_state("idle")
+    if (b_up) change_state("jump")
+    if (canfall()) change_state("drop")
+  end  
 
   -- fall state
   if p1.state == "drop" then
@@ -122,7 +131,7 @@ function update_state()
         sfx(4,2)
         p1.y -= 1
       end
-      change_state("idle")
+      change_state((b_left or b_right) and "walk" or "idle")
     end
   end
 
@@ -136,7 +145,7 @@ function update_state()
 
     local keep_jumping = b_up and p1.prt < 8
     if (not keep_jumping) then
-      change_state(canfall() and "drop" or "idle")
+      change_state(canfall() and "drop" or "walk")
     end
   end	
 
@@ -157,9 +166,11 @@ end
 
 function speed()
   local max_speed = 3
-  local accel = 5
-  local accel_speed = (accel * p1.prt * p1.prt)
-  local new_speed = min(max(1,accel_speed), max_speed)
+  local accel = 800
+  local ts = p1.prt/60
+
+  local tspeed = max(accel * ts * ts, 1)
+  local new_speed = min(tspeed, max_speed)
   
   return max(new_speed, p1.speed)
 end
